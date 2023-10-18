@@ -1,0 +1,74 @@
+{-# START_FILE .github/workflows/ci.yaml #-}
+---
+
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  lint:
+    uses: danieljtrowbridge/hs-config/.github/workflows/lint.yaml@main
+    with:
+      package: {{name}}
+  test:
+    uses: danieljtrowbridge/hs-config/.github/workflows/test.yaml@main
+    with:
+      ghc-version: {{ghc-version}}
+      package: {{name}}
+
+{-# START_FILE .gitignore #-}
+*~
+.stack-work/
+
+{-# START_FILE {{name}}/Setup.hs #-}
+import Distribution.Simple (defaultMain)
+
+main :: IO ()
+main = defaultMain
+
+{-# START_FILE {{name}}/package.yaml #-}
+---
+
+name: {{name}}
+version: 0.1.0.0
+
+author: {{author-name}}
+copyright: {{year}} {{author-name}}
+github: {{github-username}}/{{name}}
+maintainer: {{author-email}}
+
+dependencies:
+  - base >= 4.7 && < 5
+
+ghc-options:
+  - -Wall
+  - -Wcompat
+  - -Widentities
+  - -Wincomplete-record-updates
+  - -Wincomplete-uni-patterns
+  - -Wmissing-export-lists
+  - -Wmissing-home-modules
+  - -Wpartial-fields
+  - -Wredundant-constraints
+
+library:
+  source-dirs:
+    - src
+
+tests:
+  spec:
+    dependencies:
+      - {{name}}
+    main: Main.hs
+    source-dirs:
+      - test
+
+{-# START_FILE {{name}}/test/Main.hs #-}
+main :: IO ()
+main = putStrLn "Test suite not yet implemented"
