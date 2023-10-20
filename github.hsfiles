@@ -12,12 +12,9 @@ on:
       - main
 
 jobs:
-  lint:
-    uses: danieljtrowbridge/hs-config/.github/workflows/lint.yaml@main
-    with:
-      package: {{name}}
-  test:
-    uses: danieljtrowbridge/hs-config/.github/workflows/test.yaml@main
+  ci:
+    name: CI
+    uses: danieljtrowbridge/hs-config/.github/workflows/ci.yaml@main
     with:
       ghc-version: {{ghc-version}}
       package: {{name}}
