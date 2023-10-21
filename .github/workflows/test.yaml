@@ -58,7 +58,11 @@ jobs:
       - name: Create package using ${{ matrix.template }} template
         run: |
           chmod +x ./stack
-          ./stack new test-package danieljtrowbridge/${{ matrix.template }}
+          ./stack new test-package danieljtrowbridge/${{ matrix.template }} \
+            -p "author-email:danieljtrowbridge@pm.me" \
+            -p "author-name:Daniel Trowbridge" \
+            -p "ghc-version:9.4.7" \
+            -p "github-username:danieljtrowbridge"
           cd test-package/
           source init.sh
     strategy:
