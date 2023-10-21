@@ -44,6 +44,8 @@ jobs:
           name: stack-exe
           path: stack
   test:
+    env:
+      STACK_ROOT: ${{ github.workspace }}/.stack-root
     name: Test ${{ matrix.template }} template
     needs:
       - build-stack
@@ -65,6 +67,14 @@ jobs:
             -p "github-username:danieljtrowbridge"
           cd test-package/
           source init.sh
+      - name: Restore Stack root directory
+        uses: actions/cache/restore@v3
+        with:
+          key: stack-root
+          path: .stack-root/
+      - name: Run empty test suite
+        run: ../stack test test-package
+        working-directory: test-package/
     strategy:
       matrix:
         template:
