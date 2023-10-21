@@ -23,6 +23,14 @@ jobs:
 *~
 .stack-work/
 
+{-# START_FILE init.sh #-}
+git init
+git submodule add -b main --name config \
+    https://github.com/danieljtrowbridge/hs-config.git config
+ln -s config/.yamllint.yaml
+ln -s config/fourmolu.yaml
+rm init.sh
+
 {-# START_FILE {{name}}/Setup.hs #-}
 import Distribution.Simple (defaultMain)
 
