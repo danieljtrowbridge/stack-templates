@@ -24,16 +24,31 @@ jobs:
 .stack-work/
 
 {-# START_FILE init.sh #-}
+# Create a Git repository.
 git init
+
+# Configure Git to use the provided email and name.
 git config --local user.email "{{author-email}}"
 git config --local user.name "{{author-name}}"
+
+# Add the hs-config repository as a Git submodule.
 git submodule add -b main --name config \
     https://github.com/danieljtrowbridge/hs-config.git config
+
+# Add symlinks to the linter configuration files in the submodule.
 ln -s config/.yamllint.yaml
 ln -s config/fourmolu.yaml
+
+# Generate stack.yaml.lock.
 stack path >/dev/null
+
+# Delete this initialisation script.
 rm init.sh
+
+# Stage the template files.
 git add .
+
+# Output the status of the Git repository.
 git status
 
 {-# START_FILE {{name}}/Setup.hs #-}
