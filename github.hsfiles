@@ -29,7 +29,9 @@ git submodule add -b main --name config \
     https://github.com/danieljtrowbridge/hs-config.git config
 ln -s config/.yamllint.yaml
 ln -s config/fourmolu.yaml
+stack path >/dev/null
 rm init.sh
+git add .
 
 {-# START_FILE {{name}}/Setup.hs #-}
 import Distribution.Simple (defaultMain)
