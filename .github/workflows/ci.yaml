@@ -1,0 +1,56 @@
+---
+
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-stack:
+    env:
+      STACK_ROOT: ${{ github.workspace }}/.stack-root
+    name: Build Stack from source
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Stack
+        uses: actions/checkout@v4
+        with:
+          repository: commercialhaskell/stack
+      - name: Set up Stack
+        uses: haskell-actions/setup@v2
+        with:
+          enable-stack: true
+          ghc-version: 9.4.7
+          stack-setup-ghc: true
+      - name: Restore Stack root directory
+        uses: actions/cache@v3
+        with:
+          key: stack-root
+          path: .stack-root/
+      - name: Restore Stack dependencies
+        uses: actions/cache@v3
+        with:
+          key: stack-work
+          path: .stack-work/
+      - name: Build Stack executable
+        run: |
+          stack install stack:exe:stack
+          mv "$(stack path --local-bin)/stack" .
+      - name: Upload Stack executable artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: stack-exe
+          path: stack
+  test:
+    name: Test templates
+    needs:
+      - build-stack
+    strategy:
+      matrix:
+        template:
+          - github
+    uses: danieljtrowbridge/stack-templates/.github/workflows/test.yaml@main
+    with:
+      template: ${{ matrix.template }}

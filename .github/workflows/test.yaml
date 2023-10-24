@@ -3,77 +3,66 @@
 name: Test
 
 on:
-  push:
-    branches:
-      - main
+  workflow_call:
+    inputs:
+      template:
+        required: true
+        type: string
 
 jobs:
-  build-stack:
+  build:
     env:
       STACK_ROOT: ${{ github.workspace }}/.stack-root
-    name: Build Stack from source
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Stack
-        uses: actions/checkout@v4
-        with:
-          repository: commercialhaskell/stack
-      - name: Set up Stack
-        uses: haskell-actions/setup@v2
-        with:
-          enable-stack: true
-          ghc-version: 9.4.7
-          stack-setup-ghc: true
-      - name: Restore Stack root directory
-        uses: actions/cache@v3
-        with:
-          key: stack-root
-          path: .stack-root/
-      - name: Restore Stack dependencies
-        uses: actions/cache@v3
-        with:
-          key: stack-work
-          path: .stack-work/
-      - name: Build Stack executable
-        run: |
-          stack install stack:exe:stack
-          mv "$(stack path --local-bin)/stack" .
-      - name: Upload Stack executable artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: stack-exe
-          path: stack
-  test:
-    env:
-      STACK_ROOT: ${{ github.workspace }}/.stack-root
-    name: Test ${{ matrix.template }} template
-    needs:
-      - build-stack
+    name: Create test package
     runs-on: ubuntu-latest
     steps:
       - name: Download Stack executable artifact
         uses: actions/download-artifact@v3
         with:
           name: stack-exe
-      - name: Create package using ${{ matrix.template }} template
+      - name: Restore Stack root directory
+        uses: actions/cache@v3
+        with:
+          key: stack-root
+          path: .stack-root/
+      - name: Create package using ${{ inputs.template }} template
         run: |
           chmod +x ./stack
-          ./stack new test-package danieljtrowbridge/${{ matrix.template }} \
+          ./stack new test-package danieljtrowbridge/${{ inputs.template }} \
             -p "author-email:danieljtrowbridge@pm.me" \
             -p "author-name:Daniel Trowbridge" \
             -p "ghc-version:9.4.7" \
             -p "github-username:danieljtrowbridge"
           cd test-package/
           source init.sh
+      - name: Upload test package artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ inputs.template }}-test-package
+          path: test-package/
+  test:
+    env:
+      STACK_ROOT: ${{ github.workspace }}/.stack-root
+    name: Run test suite
+    needs:
+      - build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Stack executable artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: stack-exe
       - name: Restore Stack root directory
         uses: actions/cache/restore@v3
         with:
           key: stack-root
           path: .stack-root/
-      - name: Run empty test suite
-        run: ../stack test test-package
-        working-directory: test-package/
-    strategy:
-      matrix:
-        template:
-          - github
+      - name: Download test package artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ inputs.template }}-test-package
+      - name: Run test suite
+        run: |
+          chmod +x ./stack
+          cd test-package/
+          ../stack test test-package
