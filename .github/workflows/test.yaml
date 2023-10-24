@@ -40,6 +40,24 @@ jobs:
         with:
           name: ${{ inputs.template }}-test-package
           path: test-package/
+  lint:
+    container:
+      credentials:
+        password: ${{ secrets.github_token }}
+        username: ${{ github.actor }}
+      image: ghcr.io/danieljtrowbridge/docker-fourmolu:latest
+    name: Lint test package
+    needs:
+      - build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download test package artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ inputs.template }}-test-package
+      - name: Check code formatting
+        run: fourmolu --mode check test-package/
+        working-directory: test-package/
   test:
     env:
       STACK_ROOT: ${{ github.workspace }}/.stack-root
