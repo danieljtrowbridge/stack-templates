@@ -25,6 +25,8 @@ jobs:
 
 {-# START_FILE init.sh #-}
 git init
+git config --local user.email "{{author-email}}"
+git config --local user.name "{{author-name}}"
 git submodule add -b main --name config \
     https://github.com/danieljtrowbridge/hs-config.git config
 ln -s config/.yamllint.yaml
@@ -32,6 +34,7 @@ ln -s config/fourmolu.yaml
 stack path >/dev/null
 rm init.sh
 git add .
+git status
 
 {-# START_FILE {{name}}/Setup.hs #-}
 import Distribution.Simple (defaultMain)
