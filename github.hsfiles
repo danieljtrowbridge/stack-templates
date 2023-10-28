@@ -65,7 +65,7 @@ version: 0.1.0.0
 
 author: {{author-name}}
 copyright: {{year}} {{author-name}}
-github: {{github-username}}/{{name}}
+github: {{github-username}}/{{name}}/{{name}}
 maintainer: {{author-email}}
 
 dependencies:
