@@ -97,5 +97,7 @@ tests:
 {-# START_FILE {{name}}/src/.gitkeep #-}
 
 {-# START_FILE {{name}}/test/Main.hs #-}
+module Main (main) where
+
 main :: IO ()
 main = putStrLn "Test suite not yet implemented"
