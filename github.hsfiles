@@ -42,6 +42,9 @@ ln -s config/fourmolu.yaml
 # Generate stack.yaml.lock.
 stack path >/dev/null
 
+# Add a trailing newline to test/Main.hs.
+sed -i '$a\' {{name}}/test/Main.hs
+
 # Delete this initialisation script.
 rm init.sh
 
