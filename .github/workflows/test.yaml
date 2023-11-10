@@ -58,7 +58,6 @@ jobs:
           name: ${{ inputs.template }}-test-package
       - name: Check code formatting
         run: fourmolu --mode check test-package/
-        working-directory: test-package/
   test:
     env:
       STACK_ROOT: ${{ github.workspace }}/.stack-root
