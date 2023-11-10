@@ -35,6 +35,7 @@ jobs:
             -p "github-username:danieljtrowbridge"
           cd test-package/
           source init.sh
+          ls -Ral
       - name: Upload test package artifact
         uses: actions/upload-artifact@v3
         with:
