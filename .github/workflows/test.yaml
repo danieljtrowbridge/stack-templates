@@ -16,23 +16,20 @@ jobs:
     name: Create test package
     runs-on: ubuntu-latest
     steps:
-      - name: Download Stack executable artifact
-        uses: actions/download-artifact@v3
+      - name: Set up Stack
+        uses: haskell-actions/setup@v2
         with:
-          name: stack-exe
-      - name: Restore Stack root directory
-        uses: actions/cache@v3
-        with:
-          key: stack-root
-          path: .stack-root/
+          enable-stack: true
+          ghc-version: 9.4.8
+          stack-setup-ghc: true
       - name: Create package using ${{ inputs.template }} template
         run: |
-          chmod +x ./stack
-          ./stack new test-package danieljtrowbridge/${{ inputs.template }} \
+          stack new test-package danieljtrowbridge/${{ inputs.template }} \
             -p "author-email:danieljtrowbridge@pm.me" \
             -p "author-name:Daniel Trowbridge" \
-            -p "ghc-version:9.4.7" \
-            -p "github-username:danieljtrowbridge"
+            -p "ghc-version:9.4.8" \
+            -p "github-username:danieljtrowbridge" \
+            -p "resolver:lts-21.25"
           cd test-package/
           source init.sh
           ls -Ral
@@ -66,21 +63,17 @@ jobs:
       - build
     runs-on: ubuntu-latest
     steps:
-      - name: Download Stack executable artifact
-        uses: actions/download-artifact@v3
+      - name: Set up Stack
+        uses: haskell-actions/setup@v2
         with:
-          name: stack-exe
-      - name: Restore Stack root directory
-        uses: actions/cache/restore@v3
-        with:
-          key: stack-root
-          path: .stack-root/
+          enable-stack: true
+          ghc-version: 9.4.8
+          stack-setup-ghc: true
       - name: Download test package artifact
         uses: actions/download-artifact@v3
         with:
           name: ${{ inputs.template }}-test-package
       - name: Run test suite
         run: |
-          chmod +x ./stack
           cd test-package/
-          ../stack test test-package
+          stack test test-package
