@@ -61,8 +61,8 @@ rm init.sh
 # Stage the template files.
 git add .
 
-# Output the status of the Git repository.
-git status
+# Create an initial commit.
+git commit -m "Create Stack project"
 
 {-# START_FILE {{name}}/Setup.hs #-}
 import Distribution.Simple (defaultMain)
