@@ -34,7 +34,7 @@ jobs:
           source init.sh
           ls -Ral
       - name: Upload test package artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.template }}-test-package
           path: test-package/
